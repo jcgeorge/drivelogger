@@ -6,19 +6,35 @@
 
 /* 
  * File:   main.c
- * Author: jcgeorge
+ * Author: John George
  *
- * Created on 05 March 2016, 11:51
+ * Created on 04 March 2016, 22:33
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "gps.h"
 
-/*
- * 
- */
-int main(int argc, char** argv) {
+static volatile int keep_alive = 1;
 
-    return (EXIT_SUCCESS);
+void int_handler(int dummy)
+{
+    keep_alive = 0;
 }
 
+int main()
+{
+    /* Signal handler, to register ^C */
+    signal(SIGINT, int_handler);
+
+    gps_setup();
+    
+    gps_start_watch();
+    
+    while(keep_alive)
+    {
+        gps_read();
+    }
+
+    gps_end_watch();
+
+    return 0;
+}
