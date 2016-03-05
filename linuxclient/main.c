@@ -8,14 +8,21 @@
  * File:   main.c
  * Author: John George
  *
- * Created on 04 March 2016, 22:33
  */
 
+#include "main.h"
 #include "gps.h"
+// #include "obd.h"
 
 static volatile int keep_alive = 1;
 
-void int_handler(int dummy)
+void error(char *msg)
+{
+    printf("%s\n", msg);
+    exit(0);
+}
+
+void int_handler()
 {
     keep_alive = 0;
 }

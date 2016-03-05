@@ -6,50 +6,50 @@
 
 #include "gps.h"
 
-void error(char *msg)
-{
-    perror(msg);
-    exit(0);
-}
+int gpsd_socket = 0;
+int gpsd_socket_status = 0;
 
 void gps_setup()
 {
-    /* gpsd servers dumps data here by default */
-    server = gethostbyname(GPSD_HOST);
-    portno = atoi(GPSD_PORT);
+    gpsd_hostent = gethostbyname(GPSD_HOST);
+    int gpsd_server_port = atoi(GPSD_PORT);
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
+    // Establishing a socket
+    gpsd_socket = socket(AF_INET, SOCK_STREAM, 0);
+    
+    if (gpsd_socket < 0)
     {
-        error("ERROR opening socket");
+        error("ERROR opening socket!");
     }
 
-    /* Unlikely with localhost, but error management is good */
-    if (server == NULL)
+    // This is unlikely with localhost, but it is good error management
+    if (gpsd_hostent == NULL)
     {
-        fprintf(stderr, "ERROR, no such host\n");
-        exit(0);
+        error("ERROR: unknown host!");
     }
 
-    /* some network stuff */
-    serv_addr.sin_family = AF_INET;
-    bcopy((char *)server -> h_addr, (char *)&serv_addr.sin_addr.s_addr, server -> h_length);
-    serv_addr.sin_port = htons(portno);
-
-    if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    // Getting host information
+    gpsd_sockaddr.sin_family = AF_INET;
+    memcpy((char *)gpsd_hostent -> h_addr, (char *)&gpsd_sockaddr.sin_addr.s_addr, gpsd_hostent -> h_length);
+    gpsd_sockaddr.sin_port = htons(gpsd_server_port);
+    
+    // Connecting to the socket
+    gpsd_socket_status = connect(gpsd_socket, (struct sockaddr *)&gpsd_sockaddr, sizeof(gpsd_sockaddr));
+    
+    if (gpsd_socket_status < 0)
     {
-        error("ERROR connecting");
+        error("ERROR connecting!");
     }
 }
 
 void gps_start_watch()
 {
     /* Tells daemon to watch all devices, report back in JSON */
-    watch_start = GPSD_WATCH_START;
-    n = write(sockfd, watch_start, strlen(watch_start));
-    if (n < 0)
+    gpsd_socket_status = send(gpsd_socket, GPSD_WATCH_START, strlen(GPSD_WATCH_START), 0);
+    
+    if (gpsd_socket_status < 0)
     {
-        error("ERROR writing to socket");
+        error("ERROR sending to socket!");
     } else 
     {
         printf("\n==================================");
@@ -60,22 +60,24 @@ void gps_start_watch()
 
 void gps_read()
 {
-    /* Zeroes buffer before reading stuff back */
-    bzero(buffer, 1024);
-    n = read(sockfd, buffer, 1023);
-    if (n < 0)
+    /* Zeroes buffer to prepare for receiving data */
+    memset(gps_data, 0, 1024);
+    
+    gpsd_socket_status = recv(gpsd_socket, gps_data, 1023, 0);
+    
+    if (gpsd_socket_status < 0)
     {
-        error("ERROR reading from socket");
+        error("ERROR reading from socket!");
     }
-    printf("%s\n\n", buffer);
+    printf("%s\n\n", gps_data);
 }
 
 void gps_end_watch()
 {
     /* Tells daemon to stop watching devices */
-    watch_end = GPSD_WATCH_END;
-    n = write(sockfd, watch_end, strlen(watch_end));
-    if (n < 0)
+    gpsd_socket_status = send(gpsd_socket, GPSD_WATCH_END, strlen(GPSD_WATCH_END), 0);
+    
+    if (gpsd_socket_status < 0)
     {
         error("ERROR writing to socket");
     } else 
