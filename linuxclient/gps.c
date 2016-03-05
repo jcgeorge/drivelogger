@@ -44,7 +44,7 @@ void gps_setup()
 
 void gps_start_watch()
 {
-    /* Tells daemon to watch all devices, report back in JSON */
+    // Tell daemon to watch all devices
     gpsd_socket_status = send(gpsd_socket, GPSD_WATCH_START, strlen(GPSD_WATCH_START), 0);
     
     if (gpsd_socket_status < 0)
@@ -60,21 +60,31 @@ void gps_start_watch()
 
 void gps_read()
 {
-    /* Zeroes buffer to prepare for receiving data */
-    memset(gps_data, 0, 1024);
+    // Zero out buffer to prepare for receiving data
+    memset(gps_data, 0, 2048);
     
-    gpsd_socket_status = recv(gpsd_socket, gps_data, 1023, 0);
+    // Poll daemon every 2 seconds
+    sleep(2);
+    gpsd_socket_status = send(gpsd_socket, GPSD_POLL, strlen(GPSD_POLL), 0);
+    
+    if (gpsd_socket_status < 0)
+    {
+        error("ERROR sending to socket!");
+    }
+    
+    gpsd_socket_status = recv(gpsd_socket, gps_data, 2048, 0);
     
     if (gpsd_socket_status < 0)
     {
         error("ERROR reading from socket!");
     }
+    
     printf("%s\n\n", gps_data);
 }
 
 void gps_end_watch()
 {
-    /* Tells daemon to stop watching devices */
+    // Tell daemon to stop watching devices
     gpsd_socket_status = send(gpsd_socket, GPSD_WATCH_END, strlen(GPSD_WATCH_END), 0);
     
     if (gpsd_socket_status < 0)

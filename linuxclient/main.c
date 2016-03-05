@@ -29,7 +29,7 @@ void int_handler()
 
 int main()
 {
-    /* Signal handler, to register ^C */
+    // Signal handler, to register ^C
     signal(SIGINT, int_handler);
 
     gps_setup();

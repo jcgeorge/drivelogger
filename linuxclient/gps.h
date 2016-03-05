@@ -17,7 +17,9 @@
 
 #define GPSD_HOST "localhost"
 #define GPSD_PORT "2947"
-#define GPSD_WATCH_START "?WATCH={\"enable\":true,\"json\":true}"
+// #define GPSD_WATCH_START "?WATCH={\"enable\":true,\"json\":true}"
+#define GPSD_WATCH_START "?WATCH={\"enable\":true}"
+#define GPSD_POLL "?POLL;"
 #define GPSD_WATCH_END "?WATCH={\"enable\":false}"
 
 extern int gpsd_socket;
@@ -27,7 +29,7 @@ extern int gpsd_server_port;
 struct sockaddr_in gpsd_sockaddr;
 struct hostent *gpsd_hostent;
 
-char gps_data[1024];
+char gps_data[2048];
 
 void gps_setup();
 void gps_start_watch();
