@@ -30,6 +30,8 @@
 
 # Debug files
 *.dSYM/
+
+/.project
 /linuxclient/build/
 /linuxclient/dist/
-/.project
+/linuxclient/nbproject/
