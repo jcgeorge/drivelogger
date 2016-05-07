@@ -1,18 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
- * File:   main.h
- * Author: John George
- *
+ * File         : main.h
+ * Author       : Main header file
+ * Last modified: 13/04/2016
  */
 
 #ifndef MAIN_H
 #define MAIN_H
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -23,6 +18,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+#define WAIT_SECONDS 1
+
+extern bool DEBUG;
 
 void error(char*);
 

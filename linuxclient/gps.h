@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
- * File:   gps.h
- * Author: John George
- *
+ * File         : gps.h
+ * Author       : Header file for gps.c
+ * Last modified: 13/04/2016
  */
 
 #ifndef GPS_H
@@ -17,19 +11,18 @@
 
 #define GPSD_HOST "localhost"
 #define GPSD_PORT "2947"
-// #define GPSD_WATCH_START "?WATCH={\"enable\":true,\"json\":true}"
-#define GPSD_WATCH_START "?WATCH={\"enable\":true}"
-#define GPSD_POLL "?POLL;"
+#define GPSD_BUFF_LENGTH 1024
+#define GPSD_WATCH_START "?WATCH={\"enable\":true,\"json\":true}"
 #define GPSD_WATCH_END "?WATCH={\"enable\":false}"
 
 extern int gpsd_socket;
 extern int gpsd_socket_status;
 extern int gpsd_server_port;
 
-struct sockaddr_in gpsd_sockaddr;
-struct hostent *gpsd_hostent;
+extern struct sockaddr_in gpsd_sockaddr;
+extern struct hostent *gpsd_server;
 
-char gps_data[2048];
+extern char gps_data[];
 
 void gps_setup();
 void gps_start_watch();
