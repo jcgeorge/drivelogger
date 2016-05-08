@@ -32,7 +32,7 @@ void error(char *msg)
     {
         printf("\n%s", msg);
     }
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 void int_handler()
@@ -50,14 +50,12 @@ int main()
     /* Signal handler, to register ^C */
     signal(SIGINT, int_handler);
 
-//    gps_setup();
+    gps_setup();
     obd_setup();   
-    
-//    gps_start_watch();
-    
+        
     while(keep_alive)
     {
-//        gps_read();
+        gps_poll();
         obd_speed();
         sleep(WAIT_SECONDS);
     }
@@ -66,7 +64,7 @@ int main()
     {
         printf("\n^C received.");
     }
-//    gps_end_watch();
+    gps_end_watch();
 
-    return 0;
+    return EXIT_SUCCESS;
 }

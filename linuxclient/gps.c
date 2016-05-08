@@ -13,7 +13,7 @@ int gpsd_server_port = 0;
 struct sockaddr_in gpsd_sockaddr = {0};
 struct hostent *gpsd_server = {0};
 
-char gps_data[GPSD_BUFF_LENGTH] = "0";
+char gpsd_data[GPSD_BUFF_LENGTH] = "0";
 
 /* 
  * Function     : gps_setup
@@ -30,17 +30,17 @@ void gps_setup()
     
     if (gpsd_socket < 0)
     {
-        error("\ngpsd: Error opening socket!");
+        error("\nGPS: Error opening socket!");
     }
     else if (DEBUG == true)
     {
-        printf("\ngpsd: Socket established.");
+        printf("\nGPS: Socket established.");
     }
 
     /* This is unlikely with localhost, but it is good error management */
     if (gpsd_server == NULL)
     {
-        error("\ngpsd: Error, unknown host!");
+        error("\nGPS: Error, unknown host!");
     }
 
     /* Getting host information */
@@ -55,32 +55,43 @@ void gps_setup()
     
     if (gpsd_socket_status < 0)
     {
-        error("\ngpsd: Error connecting!");
+        error("\nGPS: Error connecting!");
     }
     else if (DEBUG == true)
     {
-        printf("\ngpsd: Socket connected.");
+        printf("\nGPS: Socket connected.");
     }
+    
+    gps_send(GPSD_WATCH_START);
+    gps_read();
+}
+
+void gps_poll()
+{
+    gps_send(GPSD_POLL);
+    gps_read();    
 }
 
 /* 
- * Function     : gps_start_watch
+ * Function     : gps_end_watch
  * Arguments    : none
- * Description  : Function called only if socket successfully set up. 
- *                Sends WATCH command to gpsd.
+ * Description  : Function called if ^C is detected. Sends end WATCH command
+ *                to gpsd so GPS receiver can go in to low power state. 
  */
-void gps_start_watch()
+void gps_end_watch()
 {
-    /* Tell daemon to watch all devices */
-    gpsd_socket_status = send(gpsd_socket, GPSD_WATCH_START,
-            strlen(GPSD_WATCH_START), 0);
-    
+    gps_send(GPSD_WATCH_END);
+}
+
+void gps_send(char *gpsd_command)
+{
+    gpsd_socket_status = write(gpsd_socket, gpsd_command, strlen(gpsd_command));
     if (gpsd_socket_status < 0)
     {
-        error("\ngpsd: Error writing to socket!");
+        error("\nGPS: Error sending to socket!");
     } else if (DEBUG == true)
     {
-        printf("\ngpsd: WATCH command sent.");
+        printf("\nGPS: Sent %s", gpsd_command);
     }
 }
 
@@ -93,36 +104,19 @@ void gps_start_watch()
 void gps_read()
 {
     /* Zero out buffer to prepare for receiving data */
-    memset(gps_data, 0, GPSD_BUFF_LENGTH);
+    memset(gpsd_data, 0, GPSD_BUFF_LENGTH);
     
-    gpsd_socket_status = recv(gpsd_socket, gps_data, GPSD_BUFF_LENGTH, 0);
-    
-    if (gpsd_socket_status < 0)
-    {
-        error("\ngpsd: Error reading from socket!");
-    }
-    
-    printf("\n%s", gps_data);
-}
+    gpsd_socket_status = recv(gpsd_socket, gpsd_data, GPSD_BUFF_LENGTH, 0);
 
-/* 
- * Function     : gps_end_watch
- * Arguments    : none
- * Description  : Function called if ^C is detected. Sends end WATCH command
- *                to gpsd so GPS receiver can go in to low power state. 
- */
-void gps_end_watch()
-{
-    /* Tell daemon to stop watching devices */
-    gpsd_socket_status = send(gpsd_socket, GPSD_WATCH_END,
-            strlen(GPSD_WATCH_END), 0);
-    
     if (gpsd_socket_status < 0)
     {
-        error("\ngpsd: Error writing to socket!");
+        error("\nGPS: Error reading from socket!");
     }
     else if (DEBUG == true)
     {
-        printf("\ngpsd: End WATCH command sent.");
+        if (gpsd_data[78] == 'T' && gpsd_data[128] == '3')
+        {
+            printf("\n%s", gpsd_data);
+        }
     }
 }
