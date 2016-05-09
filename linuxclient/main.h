@@ -18,15 +18,25 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-//#include "jsmn/jsmn.h"
+
+#include "gps.h"
+#include "obd.h"
+#include "fileops.h"
 
 #define WAIT_SECONDS 1
+
 #define D_OFF 0
 #define D_ON 1
 #define D_MAX 2
 
+#define F_OPEN 1
+#define F_CLOSE 0
+
 extern int DEBUG;
+extern bool GPSD_LOGGED;
 
 void error(char*);
+void inthandler();
+int main();
 
 #endif /* MAIN_H */

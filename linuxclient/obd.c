@@ -48,7 +48,8 @@ void obd_setup()
         obd_server -> h_length);
     obd_sockaddr.sin_port = htons(obd_server_port);
     
-    obd_socket_status = connect(obd_socket,(struct sockaddr *)&obd_sockaddr,sizeof(obd_sockaddr));
+    obd_socket_status = connect(obd_socket,(struct sockaddr *)&obd_sockaddr,
+            sizeof(obd_sockaddr));
     if (obd_socket_status < 0)
     {
         error("\nOBD: Error connecting!");
@@ -71,6 +72,12 @@ void obd_speed()
     obd_speed_hex[0] = obd_buffer[6];
     obd_speed_hex[1] = obd_buffer[7];
     obd_speed_dec = (int)strtol(obd_speed_hex, NULL, 16);
+    
+    if (GPSD_LOGGED == true)
+    {
+        fprintf(jsonData, "weight: %d},\n", obd_speed_dec);
+    }
+    
     if (DEBUG == D_ON)
     {
         printf("\nSpeed : %d\n", obd_speed_dec);

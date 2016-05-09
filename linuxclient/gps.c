@@ -86,10 +86,15 @@ void gps_poll()
             longitude[i-201] = gpsd_data[i];
         }
         
+        fprintf(jsonData, "{location: new google.maps.LatLng(%s, %s), ",
+                latitude, longitude);
+        
         if (DEBUG == D_ON)
         {
             printf("\nLatitude : %s\nLongitude : %s", latitude, longitude);
         }
+        
+        GPSD_LOGGED = true;
     }
 }
 

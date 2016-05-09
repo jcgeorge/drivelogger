@@ -15,12 +15,11 @@
  */
 
 #include "main.h"
-#include "gps.h"
-#include "obd.h"
 
 int DEBUG = D_ON;
+bool GPSD_LOGGED = false;
 
-static volatile int keep_alive = 1;
+static volatile int keepalive = 1;
 
 /* 
  * Function     : error
@@ -36,9 +35,9 @@ void error(char *msg)
     exit(EXIT_FAILURE);
 }
 
-void int_handler()
+void inthandler()
 {
-    keep_alive = 0;
+    keepalive = 0;
 }
 
 /* 
@@ -49,15 +48,18 @@ void int_handler()
 int main()
 {
     /* Signal handler, to register ^C */
-    signal(SIGINT, int_handler);
+    signal(SIGINT, inthandler);
 
     gps_setup();
-    obd_setup();   
+    obd_setup();
+    
+    filemanager(F_OPEN);
         
-    while(keep_alive)
+    while(keepalive)
     {
         gps_poll();
         obd_speed();
+        GPSD_LOGGED = false;
         sleep(WAIT_SECONDS);
     }
 
@@ -65,6 +67,7 @@ int main()
     {
         printf("\n^C received.");
     }
+    filemanager(F_CLOSE);
     gps_end_watch();
 
     return EXIT_SUCCESS;
