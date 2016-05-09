@@ -18,7 +18,8 @@
 #include "gps.h"
 #include "obd.h"
 
-bool DEBUG = true;
+int DEBUG = D_ON;
+
 static volatile int keep_alive = 1;
 
 /* 
@@ -28,7 +29,7 @@ static volatile int keep_alive = 1;
  */
 void error(char *msg)
 {
-    if (DEBUG == true)
+    if (DEBUG == D_ON || DEBUG == D_MAX)
     {
         printf("\n%s", msg);
     }
@@ -60,7 +61,7 @@ int main()
         sleep(WAIT_SECONDS);
     }
 
-    if (DEBUG == true)
+    if (DEBUG == D_ON || DEBUG == D_MAX)
     {
         printf("\n^C received.");
     }

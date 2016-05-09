@@ -30,7 +30,7 @@ void obd_setup()
     {
         error("\nOBD: Error opening socket!");
     }
-    else if (DEBUG == true)
+    else if (DEBUG == D_MAX)
     {
         printf("\nOBD: Socket established.");
     }
@@ -53,7 +53,7 @@ void obd_setup()
     {
         error("\nOBD: Error connecting!");
     }
-    else if (DEBUG == true)
+    else if (DEBUG == D_MAX)
     {
         printf("\nOBD: Socket connected.");
     }
@@ -71,7 +71,10 @@ void obd_speed()
     obd_speed_hex[0] = obd_buffer[6];
     obd_speed_hex[1] = obd_buffer[7];
     obd_speed_dec = (int)strtol(obd_speed_hex, NULL, 16);
-    printf("\n%d", obd_speed_dec);
+    if (DEBUG == D_ON)
+    {
+        printf("\nSpeed : %d\n", obd_speed_dec);
+    }
 }
 
 /* 
@@ -88,7 +91,7 @@ void obd_send(char *obd_command)
     if (obd_socket_status < 0)
     {
         error("\nOBD: Error sending to socket!");
-    } else if (DEBUG == true)
+    } else if (DEBUG == D_MAX)
     {
         printf("\nOBD: Sent %s", obd_command);
     }
@@ -107,7 +110,7 @@ void obd_read()
     {
         error("\nOBD: Error reading from socket!");
     }
-    if (DEBUG == true)
+    if (DEBUG == D_MAX)
     {
         printf("\n%s", obd_buffer);
     }
@@ -119,7 +122,7 @@ void obd_read()
         {
                 error("\nOBD: Error reading from socket!");
         }
-        if (DEBUG == true)
+        if (DEBUG == D_MAX)
         {
             printf("\n%s", obd_buffer);
         }

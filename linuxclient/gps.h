@@ -15,6 +15,7 @@
 #define GPSD_WATCH_START "?WATCH={\"enable\":true}"
 #define GPSD_POLL "?POLL;"
 #define GPSD_WATCH_END "?WATCH={\"enable\":false}"
+#define GPSD_VAL_LENGTH 10
 
 extern int gpsd_socket;
 extern int gpsd_socket_status;
@@ -24,6 +25,8 @@ extern struct sockaddr_in gpsd_sockaddr;
 extern struct hostent *gpsd_server;
 
 extern char gpsd_data[];
+extern char latitude[];
+extern char longitude[];
 
 void gps_setup();
 void gps_poll();

@@ -18,10 +18,14 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+//#include "jsmn/jsmn.h"
 
 #define WAIT_SECONDS 1
+#define D_OFF 0
+#define D_ON 1
+#define D_MAX 2
 
-extern bool DEBUG;
+extern int DEBUG;
 
 void error(char*);
 

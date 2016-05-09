@@ -9,11 +9,14 @@
 int gpsd_socket = 0;
 int gpsd_socket_status = 0;
 int gpsd_server_port = 0;
+int i = 0;
 
 struct sockaddr_in gpsd_sockaddr = {0};
 struct hostent *gpsd_server = {0};
 
 char gpsd_data[GPSD_BUFF_LENGTH] = "0";
+char latitude[GPSD_VAL_LENGTH] = "0";
+char longitude[GPSD_VAL_LENGTH] = "0";
 
 /* 
  * Function     : gps_setup
@@ -32,7 +35,7 @@ void gps_setup()
     {
         error("\nGPS: Error opening socket!");
     }
-    else if (DEBUG == true)
+    else if (DEBUG == D_MAX)
     {
         printf("\nGPS: Socket established.");
     }
@@ -57,7 +60,7 @@ void gps_setup()
     {
         error("\nGPS: Error connecting!");
     }
-    else if (DEBUG == true)
+    else if (DEBUG == D_MAX)
     {
         printf("\nGPS: Socket connected.");
     }
@@ -69,7 +72,25 @@ void gps_setup()
 void gps_poll()
 {
     gps_send(GPSD_POLL);
-    gps_read();    
+    gps_read();
+
+    if (gpsd_data[10] == 'P' && gpsd_data[13] == 'L' && gpsd_data[128] == '3')
+    {
+        for (i = 182; i < 191; i++)
+        {
+            latitude[i-182] = gpsd_data[i];
+        }
+                
+        for (i = 201; i < 210; i++)
+        {
+            longitude[i-201] = gpsd_data[i];
+        }
+        
+        if (DEBUG == D_ON)
+        {
+            printf("\nLatitude : %s\nLongitude : %s", latitude, longitude);
+        }
+    }
 }
 
 /* 
@@ -89,7 +110,7 @@ void gps_send(char *gpsd_command)
     if (gpsd_socket_status < 0)
     {
         error("\nGPS: Error sending to socket!");
-    } else if (DEBUG == true)
+    } else if (DEBUG == D_MAX)
     {
         printf("\nGPS: Sent %s", gpsd_command);
     }
@@ -112,11 +133,8 @@ void gps_read()
     {
         error("\nGPS: Error reading from socket!");
     }
-    else if (DEBUG == true)
+    else if (DEBUG == D_MAX)
     {
-        if (gpsd_data[78] == 'T' && gpsd_data[128] == '3')
-        {
-            printf("\n%s", gpsd_data);
-        }
+        printf("\n%s", gpsd_data);
     }
 }
