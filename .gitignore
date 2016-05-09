@@ -32,7 +32,7 @@
 *.dSYM/
 
 /.project
-/linuxclient/build/
-/linuxclient/dist/
-/linuxclient/nbproject/
+/linuxclient/build
+/linuxclient/dist
+/linuxclient/nbproject
 /webinterface/data
