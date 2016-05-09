@@ -29,7 +29,7 @@ extern char latitude[];
 extern char longitude[];
 
 void gps_setup();
-void gps_poll();
+void gps_poll(int);
 void gps_end_watch();
 void gps_send(char *);
 void gps_read();

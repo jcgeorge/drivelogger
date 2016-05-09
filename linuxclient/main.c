@@ -17,7 +17,9 @@
 #include "main.h"
 
 int DEBUG = D_ON;
-bool GPSD_LOGGED = false;
+
+int GPSD_LOGGED = 0;
+int SKIP_SAVE = 1;
 
 static volatile int keepalive = 1;
 
@@ -57,15 +59,22 @@ int main()
         
     while(keepalive)
     {
-        gps_poll();
-        obd_speed();
-        GPSD_LOGGED = false;
+        /* Discard entire first set of data readings */
+        gps_poll(SKIP_SAVE);
+        obd_speed(SKIP_SAVE);
+        SKIP_SAVE = 0;
+        sleep(WAIT_SECONDS);
+        
+        gps_poll(SKIP_SAVE);
+        obd_speed(SKIP_SAVE);
+        GPSD_LOGGED = 0;
+        SKIP_SAVE = 1;
         sleep(WAIT_SECONDS);
     }
 
     if (DEBUG == D_ON || DEBUG == D_MAX)
     {
-        printf("\n^C received.");
+        printf("\n\n^C received.");
     }
     filemanager(F_CLOSE);
     gps_end_watch();

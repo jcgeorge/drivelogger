@@ -10,6 +10,7 @@
 #include "main.h"
 
 #define OBD_HOST "192.168.100.135"
+//#define OBD_HOST "192.168.0.10"
 #define OBD_PORT "35000"
 #define OBD_INFO "ATI\r"
 #define OBD_ECHO_OFF "ATE0\r"
@@ -29,7 +30,7 @@ extern char obd_buffer[];
 extern char obd_speed_hex[];
 
 void obd_setup();
-void obd_speed();
+void obd_speed(int);
 void obd_send(char*);
 void obd_read();
 

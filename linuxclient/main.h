@@ -33,7 +33,8 @@
 #define F_CLOSE 0
 
 extern int DEBUG;
-extern bool GPSD_LOGGED;
+extern int GPSD_LOGGED;
+extern int SKIP_SAVE;
 
 void error(char*);
 void inthandler();

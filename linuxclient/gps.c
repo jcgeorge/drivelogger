@@ -69,7 +69,7 @@ void gps_setup()
     gps_read();
 }
 
-void gps_poll()
+void gps_poll(int SKIP)
 {
     gps_send(GPSD_POLL);
     gps_read();
@@ -86,15 +86,17 @@ void gps_poll()
             longitude[i-201] = gpsd_data[i];
         }
         
-        fprintf(jsonData, "{location: new google.maps.LatLng(%s, %s), ",
-                latitude, longitude);
-        
-        if (DEBUG == D_ON)
+        if (!SKIP)
         {
-            printf("\nLatitude : %s\nLongitude : %s", latitude, longitude);
+            fprintf(jsonData, "{location: new google.maps.LatLng(%s, %s), ",
+                latitude, longitude);
+            GPSD_LOGGED = 1;
+            
+            if (DEBUG == D_ON)
+            {
+                printf("\nLatitude : %s\nLongitude : %s", latitude, longitude);
+            }
         }
-        
-        GPSD_LOGGED = true;
     }
 }
 

@@ -43,13 +43,14 @@ void fileclose(char *file)
     
     if (DEBUG == D_ON || DEBUG == D_MAX)
     {
-        if (!filestatus)
+        if (filestatus)
         {
-            printf("\nFILE: Closed %s", file);
+            printf("\nFILE: Error closing %s", file);
+            error(NULL);
         }
         else
         {
-            printf("\nFILE: Error closing %s", file);
+            printf("\nFILE: Closed %s", file);
         }
     }
 }

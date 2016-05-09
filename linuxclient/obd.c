@@ -65,7 +65,7 @@ void obd_setup()
     obd_read();
 }
 
-void obd_speed()
+void obd_speed(int SKIP)
 {
     obd_send(OBD_SPEED);
     obd_read();
@@ -73,14 +73,17 @@ void obd_speed()
     obd_speed_hex[1] = obd_buffer[7];
     obd_speed_dec = (int)strtol(obd_speed_hex, NULL, 16);
     
-    if (GPSD_LOGGED == true)
+    if (!SKIP)
     {
-        fprintf(jsonData, "weight: %d},\n", obd_speed_dec);
-    }
-    
-    if (DEBUG == D_ON)
-    {
-        printf("\nSpeed : %d\n", obd_speed_dec);
+        if (GPSD_LOGGED)
+        {
+            fprintf(jsonData, "weight: %d},\n", obd_speed_dec);
+        }
+        
+        if (DEBUG == D_ON)
+        {
+            printf("\nSpeed : %d\n", obd_speed_dec);
+        }
     }
 }
 
