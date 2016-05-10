@@ -17,10 +17,8 @@
 #include "main.h"
 
 int DEBUG = D_ON;
-
 int GPSD_LOGGED = 0;
 int SKIP_SAVE = 1;
-
 static volatile int keepalive = 1;
 
 /* 
@@ -42,6 +40,25 @@ void inthandler()
     keepalive = 0;
 }
 
+int gethourofday()
+{
+    char outstr[200];
+    time_t t;
+    struct tm *tmp;
+
+    t = time(NULL);
+    tmp = localtime(&t);
+    if (tmp == NULL) {
+        error("TIMEL: localtime() failed!");
+    }
+    
+    if (strftime(outstr, sizeof(outstr), "%H", tmp) == 0) {
+        error("TIME: strftime() returned 0!");
+    }
+    
+    return ((int)strtol(outstr, NULL, 10));
+}
+
 /* 
  * Function     : main
  * Arguments    : none
@@ -51,15 +68,26 @@ int main()
 {
     /* Signal handler, to register ^C */
     signal(SIGINT, inthandler);
-
+                    
     gps_setup();
-    obd_setup();
-    
-    filemanager(F_OPEN);
+    obd_setup();    
+    filemanager(F_OPEN, gethourofday());
         
     while(keepalive)
     {
-        /* Discard entire first set of data readings */
+        /* Discard first four sets of data */
+        gps_poll(SKIP_SAVE);
+        obd_speed(SKIP_SAVE);
+        sleep(WAIT_SECONDS);
+        
+        gps_poll(SKIP_SAVE);
+        obd_speed(SKIP_SAVE);
+        sleep(WAIT_SECONDS);
+        
+        gps_poll(SKIP_SAVE);
+        obd_speed(SKIP_SAVE);
+        sleep(WAIT_SECONDS);
+        
         gps_poll(SKIP_SAVE);
         obd_speed(SKIP_SAVE);
         SKIP_SAVE = 0;
@@ -76,7 +104,7 @@ int main()
     {
         printf("\n\n^C received.");
     }
-    filemanager(F_CLOSE);
+    filemanager(F_CLOSE, gethourofday());
     gps_end_watch();
 
     return EXIT_SUCCESS;
