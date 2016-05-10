@@ -4,10 +4,10 @@ int filestatus = 0;
 FILE *jsonData;
 
 char picked_file[64] = "0";
-char FILE_MORNING[] = "../webinterface/data/morningData.txt";
-char FILE_NOON[] = "../webinterface/data/noonData.txt";
-char FILE_AFTERNOON[] = "../webinterface/data/afternoonData.txt";
-char FILE_EVENING[] = "../webinterface/data/eveningData.txt";
+char FILE_MORNING[] = "../webinterface/data/morningData.json";
+char FILE_NOON[] = "../webinterface/data/noonData.json";
+char FILE_AFTERNOON[] = "../webinterface/data/afternoonData.json";
+char FILE_EVENING[] = "../webinterface/data/eveningData.json";
 
 void filemanager(int filecommand, int hourofday)
 {
