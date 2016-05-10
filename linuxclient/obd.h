@@ -22,6 +22,7 @@ extern int obd_socket;
 extern int obd_socket_status;
 extern int obd_server_port;
 extern int obd_speed_dec;
+extern int obd_speed_weight;
 
 extern struct sockaddr_in obd_sockaddr;
 extern struct hostent *obd_server;

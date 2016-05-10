@@ -9,7 +9,8 @@
 int obd_socket = 0;
 int obd_socket_status = 0;
 int obd_server_port = 0;
-int obd_speed_dec = 0;
+int obd_speed_mph = 0;
+int obd_speed_weight = 0;
 
 struct sockaddr_in obd_sockaddr = {0};
 struct hostent *obd_server = {0};
@@ -71,18 +72,47 @@ void obd_speed(int SKIP)
     obd_read();
     obd_speed_hex[0] = obd_buffer[6];
     obd_speed_hex[1] = obd_buffer[7];
-    obd_speed_dec = (int)strtol(obd_speed_hex, NULL, 16);
+    obd_speed_mph = ((int)strtol(obd_speed_hex, NULL, 16)) * 0.621; // kph to mph
     
     if (!SKIP)
     {
         if (GPSD_LOGGED)
         {
-            fprintf(jsonData, "weight: %d},\n", obd_speed_dec);
-        }
-        
-        if (DEBUG == D_ON)
-        {
-            printf("\nSpeed : %d\n", obd_speed_dec);
+            if (obd_speed_mph < 6)
+            {
+                obd_speed_weight = 100;
+            }
+            else if (obd_speed_mph > 5 && obd_speed_mph < 11)
+            {
+                obd_speed_weight = 80;
+            }
+            else if (obd_speed_mph > 10 && obd_speed_mph < 16)
+            {
+                obd_speed_weight = 65;
+            }
+            else if (obd_speed_mph > 15 && obd_speed_mph < 21)
+            {
+                obd_speed_weight = 50;
+            }
+            else if (obd_speed_mph > 20 && obd_speed_mph < 31)
+            {
+                obd_speed_weight = 30;
+            }
+            else if (obd_speed_mph > 30 && obd_speed_mph < 41)
+            {
+                obd_speed_weight = 20;
+            }
+            else if (obd_speed_mph > 40)
+            {
+                obd_speed_weight = 10;
+            }
+            
+            fprintf(jsonData, "weight: %d},\n", obd_speed_weight);
+            
+            if (DEBUG == D_ON)
+            {
+                printf("\nSpeed : %d\nWeight : %d\n", obd_speed_mph, obd_speed_weight);
+            }
         }
     }
 }
